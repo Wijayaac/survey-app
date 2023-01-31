@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('surveys', function (Blueprint $table) {
             $table->id();
-            $table->foreignId(User::class, 'user_id');
+            $table->foreignIdFor(\App\Models\User::class, 'user_id');
             $table->string('title', 1000);
             $table->string('slug', 1000);
             $table->tinyInteger('status');
