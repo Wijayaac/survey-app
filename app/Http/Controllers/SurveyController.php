@@ -9,6 +9,7 @@ use App\Models\SurveyQuestionAnswer;
 use App\Http\Requests\StoreSurveyRequest;
 use App\Http\Requests\UpdateSurveyRequest;
 use App\Http\Requests\StoreSurveyAnswerRequest;
+use App\Http\Resources\SurveyDetailResource;
 use App\Http\Resources\SurveyResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -27,7 +28,9 @@ class SurveyController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        return SurveyResource::collection(Survey::where('user_id', $user->id)->paginate(2));
+        $limit = $request->query('limit') ? intval($request->query('limit')) : 2;
+
+        return SurveyResource::collection(Survey::where('user_id', $user->id)->paginate($limit));
     }
 
     /**
@@ -68,7 +71,7 @@ class SurveyController extends Controller
         if ($user->id !== $survey->user_id) {
             return abort(403, 'Unauthorized action');
         }
-        return new SurveyResource($survey);
+        return new SurveyDetailResource($survey);
     }
     /**
      * Display the specified resource.
@@ -78,7 +81,7 @@ class SurveyController extends Controller
      */
     public function surveyForGuest(Survey $survey)
     {
-        return new SurveyResource($survey);
+        return new SurveyDetailResource($survey);
     }
 
     public function storeAnswer(Survey $survey, StoreSurveyAnswerRequest $request)
@@ -119,8 +122,9 @@ class SurveyController extends Controller
     public function update(UpdateSurveyRequest $request, Survey $survey)
     {
         $data = $request->validated();
+        $patern = '/(http[s]?:\/\/)?([^\/\s]+\/)/';
 
-        if (isset($data['image'])) {
+        if (isset($data['image']) && preg_replace($patern, '', $data['image'], 1) !== $survey->image) {
             $relativePath = $this->saveImage($data['image']);
             $data['image'] = $relativePath;
 

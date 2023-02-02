@@ -2,11 +2,10 @@
 
 namespace App\Http\Resources;
 
-use DateTime;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 
-class SurveyResource extends JsonResource
+class SurveyDetailResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -22,8 +21,9 @@ class SurveyResource extends JsonResource
             'title'    => $this->title,
             'slug'    => $this->slug,
             'status'    => $this->status !== 'draft',
-            'posted' => (new DateTime($this->created_at))->format('Y-m-d'),
             'description'    => $this->description,
+            'expire_date'    => $this->expire_date,
+            'questions'    => SurveyQuestionResource::collection($this->questions),
         ];
     }
 }

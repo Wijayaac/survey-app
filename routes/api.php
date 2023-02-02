@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SurveyController;
@@ -26,6 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/survey', SurveyController::class);
 
     Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    Route::get('/answer', [AnswerController::class, 'index']);
+    Route::get('/answer/{id}', [AnswerController::class, 'getAnswer']);
 });
 Route::get('/survey-by-slug/{survey:slug}', [SurveyController::class, 'surveyForGuest']);
 
