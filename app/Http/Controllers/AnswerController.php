@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SurveyAnswersExport;
 use App\Http\Resources\AnswerResource;
 use App\Models\SurveyAnswer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AnswerController extends Controller
 {
@@ -17,8 +19,9 @@ class AnswerController extends Controller
         return AnswerResource::collection($answers);
     }
 
-    public function getTotalAnswer()
+    public function export(Request $request)
     {
+        return Excel::download(new SurveyAnswersExport($request->query('survey')), 'answers.xlsx');
     }
 
     public function getAnswer(Request $request)
