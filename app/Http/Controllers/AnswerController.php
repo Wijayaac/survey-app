@@ -2,31 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SurveyAnswersExport;
 use App\Http\Resources\AnswerResource;
-use App\Http\Resources\SurveyResourceDashboard;
-use App\Models\Survey;
 use App\Models\SurveyAnswer;
-use App\Models\SurveyQuestionAnswer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AnswerController extends Controller
 {
     public function index(Request $request)
     {
         $user = $request->user();
-        $answers = SurveyAnswer::query()->join('surveys', 'survey_answers.survey_id', 'surveys.id')->where('survey_id', $request->query('id'))->where('surveys.user_id', $user->id)->paginate($request->query('limit'));
+        $answers = SurveyAnswer::query()->join('surveys', 'survey_answers.survey_id', 'surveys.id')->select(['survey_answers.id as id', 'survey_answers.survey_id as survey_id', 'survey_answers.start_date as created_at', 'surveys.expire_date as expire_date'])->where('survey_id', $request->query('id'))->where('surveys.user_id', $user->id)->paginate($request->query('limit'));
 
         return AnswerResource::collection($answers);
     }
 
-    public function getTotalAnswer()
+    public function export(Request $request)
     {
+        return Excel::download(new SurveyAnswersExport($request->query('survey')), 'answers.xlsx');
     }
 
-    public function getAnswer()
+    public function getAnswer(Request $request)
     {
-        $answers = DB::table('survey_answers')->join('survey_question_answers', 'survey_answers.id', 'survey_question_answers.survey_answer_id')->where('survey_answers.id', 3)->get([
+        $answers = DB::table('survey_answers')->join('survey_question_answers', 'survey_answers.id', 'survey_question_answers.survey_answer_id')->where('survey_answers.id', $request->id)->get([
             "survey_question_answers.survey_question_id as id",
             "survey_question_answers.answer as value",
         ]);

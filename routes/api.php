@@ -30,7 +30,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/answer', [AnswerController::class, 'index']);
     Route::get('/answer/{id}', [AnswerController::class, 'getAnswer']);
+
+    Route::get('/export', [AnswerController::class, 'export']);
 });
+
 Route::get('/survey-by-slug/{survey:slug}', [SurveyController::class, 'surveyForGuest']);
 
 Route::post('/survey/{survey}/answer', [SurveyController::class, 'storeAnswer']);
