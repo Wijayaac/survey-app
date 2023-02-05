@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use DateTime;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 
@@ -22,7 +23,7 @@ class SurveyDetailResource extends JsonResource
             'slug'    => $this->slug,
             'status'    => $this->status !== 'draft',
             'description'    => $this->description,
-            'expire_date'    => $this->expire_date,
+            'expire_date'    => (new DateTime($this->expire_date))->format('Y-m-d'),
             'questions'    => SurveyQuestionResource::collection($this->questions),
         ];
     }
