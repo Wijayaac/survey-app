@@ -28,7 +28,7 @@ class SurveyController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $limit = $request->query('limit') ? intval($request->query('limit')) : 2;
+        $limit = $request->query('limit') ? intval($request->query('limit')) : 6;
 
         return SurveyResource::collection(Survey::where('user_id', $user->id)->paginate($limit));
     }
